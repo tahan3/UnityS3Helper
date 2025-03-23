@@ -10,24 +10,23 @@ namespace Plugins.AWSS3
 {
     public static class S3AmazonHelper
     {
-        private const string BucketName = "bucketname";
-        private const string Region = "region";
-        private const string AccessKey = "accesskey";
-        private const string SecretKey = "secretkey";
-        private const string SpaceURL = "amazonaws.com";
-        private static string SpaceEndpoint => $"https://{Region}.{SpaceURL}";
-
         private static readonly IAmazonS3 S3Client;
+        private static readonly S3Settings S3Settings;
         
         static S3AmazonHelper()
         {
+            S3Settings = S3Settings.Load();
+            
+            if (S3Settings==null)
+                throw new Exception("Can't find S3Settings file.");
+            
             AmazonS3Config config = new AmazonS3Config
             {
-                ServiceURL = SpaceEndpoint,
+                ServiceURL = S3Settings.SpaceEndpoint,
                 ForcePathStyle = true,
             };
             
-            S3Client = new AmazonS3Client(AccessKey, SecretKey, config);
+            S3Client = new AmazonS3Client(S3Settings.accessKey, S3Settings.secretKey, config);
         }
         
         public static async Task<bool> ListBucketContentsAsync()
@@ -36,7 +35,7 @@ namespace Plugins.AWSS3
             {
                 var request = new ListObjectsV2Request
                 {
-                    BucketName = BucketName,
+                    BucketName = S3Settings.bucketName,
                     MaxKeys = 10,
                 };
 
@@ -68,7 +67,7 @@ namespace Plugins.AWSS3
             {
                 var request = new ListObjectsV2Request
                 {
-                    BucketName = BucketName,
+                    BucketName = S3Settings.bucketName,
                     MaxKeys = 10,
                 };
 
@@ -104,7 +103,7 @@ namespace Plugins.AWSS3
             {
                 GetObjectRequest getRequest = new GetObjectRequest
                 {
-                    BucketName = BucketName,
+                    BucketName = S3Settings.bucketName,
                     Key = remoteFilePath
                 };
                 
