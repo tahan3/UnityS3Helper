@@ -1,7 +1,7 @@
+#if UNITY_EDITOR
 using System;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Plugins.AWSS3
 {
@@ -66,3 +66,4 @@ namespace Plugins.AWSS3
         }
     }
 }
+#endif
